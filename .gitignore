@@ -3,3 +3,5 @@ output.html
 location.xlsx
 tweets/
 mycreds.txt
+credentials.json
+test.py

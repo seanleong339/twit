@@ -5,7 +5,6 @@ import folium
 import os
 import concurrent.futures
 import shutil
-import threading
 from tabulate import tabulate
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
@@ -21,14 +20,10 @@ def extractData(data):
     folium.Circle(location=bound, radius=row['Radius']*1000).add_to(mapObj)
 
     testlib = itertools.islice(sntwitter.TwitterSearchScraper(
-        ' geocode:"{}" lang:en min_retweets:5 min_faves:5'.format(row['locs'])).get_items(), 10)
-    df_test = []
-    for i in testlib:
-        df_test.append([i.date.ctime(), i.user.username,
-                       i.content, i.retweetCount, i.likeCount, i.lang])
+        ' geocode:"{}" lang:en min_retweets:5 min_faves:5 filter:news'.format(row['locs'])).get_items(), 100)
     df_test = pd.DataFrame(
-        df_test, columns=['DateTime', 'User', 'Text', 'Retweets', 'Likes', 'Language'])
-    df_test.to_json('tweets/{}'.format(filename), orient='records',
+        testlib)
+    df_test.to_json('tweets/{}'.format(filename), orient='records', date_format='iso',
                     force_ascii=False, lines=True, indent=4)
 
     file.SetContentFile('tweets/{}'.format(filename))
@@ -72,28 +67,10 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
 
 print('All tweets uploaded')
 
-#for index,row in location.iterrows():
-#    filename = '{}.json'.format(index)
-#    file = drive.CreateFile({'title':filename})
-#    bound = []
-#    bound.append(row['Latitude'])
-#    bound.append(row['Longtitude'])
-#    folium.Circle(location=bound, radius=row['Radius']*1000).add_to(mapObj)
-#
-#    testlib = itertools.islice(sntwitter.TwitterSearchScraper(' geocode:"{}" lang:en min_retweets:5 min_faves:5'.format(row['locs'])).get_items(),10)
-#    df_test = []
-#    for i in testlib:
-#        df_test.append([i.date.ctime() ,i.user.username, i.content, i.retweetCount, i.likeCount, i.lang])
-#    df_test = pd.DataFrame(df_test, columns=['DateTime','User','Text','Retweets','Likes','Language'])
-#    df_test.to_json('tweets/{}'.format(filename), orient = 'records', force_ascii=False, lines=True, indent=4)
-#
-#    file.SetContentFile('tweets/{}'.format(filename))
-#    file.Upload()
-
 mapObj.save('output.html')
 file = drive.CreateFile({'title': 'map.html'})
 file.SetContentFile('output.html')
 file.Upload()
 
 #os.remove('output.html')
-#shutil.rmtree('twitter\tweets', onerror=handler)
+shutil.rmtree('tweets/', onerror=handler)
