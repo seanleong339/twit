@@ -17,10 +17,17 @@ def extractData(data):
     bound = []
     bound.append(row['Latitude'])
     bound.append(row['Longtitude'])
-    folium.Circle(location=bound, radius=row['Radius']*1000).add_to(mapObj)
+    folium.Circle(
+        location=bound, 
+        radius=row['Radius']*1000, 
+        tooltip='{}'.format(index),
+        color="#3186cc",
+        fill=True,
+        fill_color="#3186cc"
+    ).add_to(mapObj)
 
     testlib = itertools.islice(sntwitter.TwitterSearchScraper(
-        ' geocode:"{}" lang:en min_retweets:5 min_faves:5 filter:news'.format(row['locs'])).get_items(), 100)
+        'geocode:"{}" lang:en min_retweets:5 min_faves:5 filter:news'.format(row['locs'])).get_items(), 100)
     df_test = pd.DataFrame(
         testlib)
     df_test.to_json('tweets/{}'.format(filename), orient='records', date_format='iso',
