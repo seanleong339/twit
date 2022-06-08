@@ -27,7 +27,10 @@ def extractData(data):
     ).add_to(mapObj)
 
     testlib = itertools.islice(sntwitter.TwitterSearchScraper(
-        'geocode:"{}" lang:en min_retweets:5 min_faves:5 filter:news'.format(row['locs'])).get_items(), 100)
+        'geocode:"{}" lang:en min_retweets:5 min_faves:5 filter:news'
+        .format(row['locs']))
+        .get_items(), 
+        100)
     df_test = pd.DataFrame(
         testlib)
     df_test.to_json('tweets/{}'.format(filename), orient='records', date_format='iso',
