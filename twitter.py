@@ -29,8 +29,8 @@ def extractNewsData(data):
     ).add_to(mapObj)
 
     testlib = itertools.islice(sntwitter.TwitterSearchScraper(
-        'geocode:"{}" lang:en min_retweets:5 min_faves:5 filter:news {} {}'
-        .format(row['locs'], timestart, timeend))
+        'geocode:"{}" lang:en min_retweets:5 min_faves:5 {} {} {}'
+        .format(row['locs'], news, timestart, timeend))
         .get_items(), 
         1)
 
@@ -140,6 +140,13 @@ if first == '1':
     while second != '1' and second != '2':
         second = input('Invalid input. Enter 1 to search by location, enter 2 to search by user: ')
     if second == '1':
+        news = input('Search news tweet enter 1, search for all tweets enter 2: ')
+        while news != '1' and news != '2':
+            news = input('Invalid input. Enter 1 for news, 2 for all tweets: ')
+        if news == '1':
+            news = 'filter:news'
+        else:
+            news = ''
         tic = time.perf_counter()
         mapObj = folium.Map(location=location.loc['Singapore','Latitude':'Longtitude'])
         with concurrent.futures.ThreadPoolExecutor(max_workers=16) as executor:
