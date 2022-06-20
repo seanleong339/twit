@@ -3,6 +3,6 @@ output.html
 tweets/
 mycreds.txt
 credentials.json
-test.py
 clients_secrets.json
 test.json
+*.json

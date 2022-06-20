@@ -78,7 +78,7 @@ def replyToTweet(id):
 
 
 #import location
-data = pd.read_excel(r'C:\Users\seang\OneDrive\Desktop\Intern\twitter\location.xlsx')
+data = pd.read_excel(r'D:\Sean\Intern\Twitter\twit\location.xlsx')
 location = pd.DataFrame(data)
 location["locs"] = location['Latitude'].map(str) + ', ' + location['Longtitude'].map(str) + ', ' + location['Radius'].map(str) + 'km'
 location.set_index('Location',inplace=True)
