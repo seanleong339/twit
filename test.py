@@ -4,10 +4,11 @@ import itertools
 import copy
 import json
 import time
+import datetime
 from pymongo import MongoClient
 from tabulate import tabulate
 
-location = '1.317351,103.8194992,15km'
+location = '3.139003,101.686852,20km'
 
 client = MongoClient('localhost', 27017)
 
@@ -24,28 +25,30 @@ enddate = ''
 
 tic = time.perf_counter()
 
-for i, tweet in enumerate(sntwitter.TwitterSearchScraper('geocode:"{}" lang:en filter:news  until:2022-06-22'.format(location)).get_items()):
-	if i > 1000:
+for i, tweet in enumerate(sntwitter.TwitterSearchScraper('geocode:"{}" filter:news until:2022-06-28'.format(location)).get_items()):
+	if i > 100000:
 		break
+	if i%10000 == 0:
+		print(f'{i} at {datetime.datetime.now()}')
 	tweets.append(tweet)
-	replies = replies + list(itertools.islice(sntwitter.TwitterTweetScraper(tweet.id, mode = sntwitter.TwitterTweetScraperMode.RECURSE).get_items(),100))
+	#replies = replies + list(itertools.islice(sntwitter.TwitterTweetScraper(tweet.id, mode = sntwitter.TwitterTweetScraperMode.RECURSE).get_items(),100))
 
-print(f'Got {len(tweets)} tweets, {len(replies)} replies')
+#print(f'Got {len(tweets)} tweets, {len(replies)} replies')
 
 df = pd.DataFrame(tweets)
 print(f'{df.shape[0]} tweets found')
-df['News'] = True
+df['News'] = False
 
 #tweetdict = df.to_dict('records')
 
 #sgtweet.insert_many(tweetdict, ordered=False)
 
-if len(replies) > 0:
-	repliesdf = pd.DataFrame(replies)
-	repliesdf = repliesdf[repliesdf.lang == 'en']
-	repliesdf.to_json('replies.json', orient='records', date_format='iso',
-			    force_ascii=False)
-
+#if len(replies) > 0:
+#	repliesdf = pd.DataFrame(replies)
+#	repliesdf = repliesdf[repliesdf.lang == 'en']
+#	repliesdf.to_json('replies.json', orient='records', date_format='iso',
+#			    force_ascii=False)
+#
 	#sgreply.insert_many(repliesdf.to_dict('records'), ordered=False)
 
 df.to_json('test.json', orient='records', date_format='iso',

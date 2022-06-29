@@ -21,7 +21,7 @@ def get_tweets(date_start, date_end, region, news):
         date_end = datetime.datetime.today().strftime('%Y-%m-%d')
 
     result = tweet.find({
-        'date': {'$gte':date_start, '$lte':datetime.datetime.strptime(date_end,'%Y-%m-%d')},
+        'date': {'$gte':date_start, '$lte': date_end},
         'News': {'$eq': news}
     }, {'_id':0})
 
@@ -44,7 +44,7 @@ def get_userid(region):
     if region == '1':
         tweet = sgtweet
     
-    result = tweet.find({},{
+    result = tweet.distinct({
         '_id':0,
         'user':1
     })
@@ -75,13 +75,13 @@ if int(cmd) == 1:
     # input time range that tweets are from, in yyyy-mm-dd format
     date_start = input('Start of date range in yyyy-mm-dd format: ') #inclusive
 
-    while not date_start or not re.match(datereg,date_start):
+    while date_start and not re.match(datereg,date_start):
         date_start = input('Please input start of date range in yyyy-mm-dd format: ') 
     if date_start == '':
         date_start = None
     
     date_end = input('End of date range in yyyy-mm-dd format: ') #not inclusive
-    while not date_end or not re.match(datereg, date_end):
+    while date_end and not re.match(datereg, date_end):
         date_end = input('Please input end of date range in yyyy-mm-dd format: ') 
     if date_end == '':
         date_end = None
